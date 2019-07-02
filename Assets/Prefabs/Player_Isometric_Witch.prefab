@@ -58,7 +58,7 @@ GameObject:
   - component: {fileID: 3339481644051735611}
   - component: {fileID: 3339481644051735614}
   - component: {fileID: 3339481644051735613}
-  - component: {fileID: 3339481644051735612}
+  - component: {fileID: 9149185487437732930}
   m_Layer: 0
   m_Name: WitchRender
   m_TagString: Untagged
@@ -147,7 +147,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &3339481644051735612
+--- !u!114 &9149185487437732930
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -156,7 +156,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3339481644051735610}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0631f36ac84554335b5b1f70f25312fb, type: 3}
+  m_Script: {fileID: 11500000, guid: 0fd63a170887bda489e4e8609d6385b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &3339481645326394338
@@ -201,7 +201,7 @@ GameObject:
   - component: {fileID: 3339481645408498932}
   - component: {fileID: 3339481645408498930}
   - component: {fileID: 2079923368}
-  - component: {fileID: 2079923369}
+  - component: {fileID: 5801958606210440158}
   m_Layer: 0
   m_Name: Player_Isometric_Witch
   m_TagString: Untagged
@@ -257,7 +257,7 @@ SortingGroup:
   m_SortingLayerID: 2130146985
   m_SortingLayer: 1
   m_SortingOrder: 0
---- !u!114 &2079923369
+--- !u!114 &5801958606210440158
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -266,7 +266,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3339481645408498929}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce0038be263d74d9b95eb7a5862c9f4e, type: 3}
+  m_Script: {fileID: 11500000, guid: d5e91d0b5b8219447a0577dff97bd504, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   movementSpeed: 1
