@@ -18,8 +18,8 @@ public class IsometricNPCMovementController : MonoBehaviour
 
     Path path;
     int currentWaypoint = 0;
-    bool endOfPathReached = false;
-    float moveSpeed = 1f;
+    bool targetReached = false;
+    float distanceToTarget = 0f;
 
     Seeker seeker;
     Rigidbody2D rbody;
@@ -53,28 +53,18 @@ public class IsometricNPCMovementController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        DisableMovementIfNearTarget();
-        
-        if (path == null)
-            return;
+        DisableMovementIfAtTarget();
 
-        if (currentWaypoint >= path.vectorPath.Count)
-        {
-            endOfPathReached = true;
+        if (path == null || targetReached)
             return;
-        }
-        else
-        {
-            endOfPathReached = false;
-        }
 
         Vector2 nextPosition = (Vector2)path.vectorPath[currentWaypoint];
-        Vector2 direction = Vector2.ClampMagnitude((nextPosition - rbody.position), 1).normalized;
+        Vector2 direction = Vector2.ClampMagnitude((nextPosition - (Vector2) transform.position), 1);
 
         isoRenderer.SetDirection(direction);
-        transform.position = Vector2.MoveTowards(transform.position, nextPosition, moveSpeed * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(transform.position, nextPosition, movementSpeed * Time.deltaTime);
 
-        float distance = Vector2.Distance(rbody.position, path.vectorPath[currentWaypoint]);
+        float distance = Vector2.Distance(transform.position, path.vectorPath[currentWaypoint]);
 
         if (distance <= nextWaypointDistance)
         {
@@ -88,14 +78,12 @@ public class IsometricNPCMovementController : MonoBehaviour
         while (true)
         {
             // If set to stop moving on path complete, end coroutine here
-            if (endOfPathReached && stopOnPathCompletion)
+            if (targetReached && stopOnPathCompletion)
                 yield break;
 
-            float distanceToTarget = Vector2.Distance(rbody.position, moveTarget.transform.position);
-
-            if (seeker.IsDone() && distanceToTarget > endDistance)
+            if (seeker.IsDone())
             {
-                seeker.StartPath(rbody.position, moveTarget.position, OnPathCalculationComplete);
+                seeker.StartPath(transform.position, moveTarget.position, OnPathCalculationComplete);
             }
 
             yield return new WaitForSeconds(.5f);
@@ -112,23 +100,25 @@ public class IsometricNPCMovementController : MonoBehaviour
     }
 
     /// Disabled body kinematics near target (avoids pushing)
-    private void DisableMovementIfNearTarget()
+    private void DisableMovementIfAtTarget()
     {
-        float distanceToTarget = Vector2.Distance(rbody.position, moveTarget.transform.position);
+        distanceToTarget = Vector2.Distance(transform.position, moveTarget.transform.position);
 
-        if (distanceToTarget < endDistance)
+        if (distanceToTarget > endDistance)
         {
-            rbody.isKinematic = true;
-            return;
+            rbody.isKinematic = false;
+            targetReached = false;
         }
         else
         {
-            rbody.isKinematic = false;
+            rbody.isKinematic = true;
+            targetReached = true;
+            path = null;
         }
     }
     private void Reset()
     {
         StopAllCoroutines();
-        endOfPathReached = false;
+        targetReached = false;
     }
 }
