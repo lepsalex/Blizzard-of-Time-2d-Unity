@@ -59,6 +59,7 @@ GameObject:
   - component: {fileID: 8324010745028174659}
   - component: {fileID: 8324010745028174658}
   - component: {fileID: 2166923433800615525}
+  - component: {fileID: 3795216652120353148}
   - component: {fileID: 3030850662194327082}
   m_Layer: 0
   m_Name: Creature
@@ -143,6 +144,28 @@ MonoBehaviour:
   tagPenalties: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   graphMask:
     value: -1
+--- !u!114 &3795216652120353148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8324010745028174657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb6a34d769a1e4ac7b0b30e433aa443c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 1
+  smoothType: 2
+  subdivisions: 2
+  iterations: 2
+  strength: 0.5
+  uniformLength: 1
+  maxSegmentLength: 2
+  bezierTangentLength: 0.4
+  offset: 2
+  factor: 0.1
 --- !u!114 &3030850662194327082
 MonoBehaviour:
   m_ObjectHideFlags: 0
