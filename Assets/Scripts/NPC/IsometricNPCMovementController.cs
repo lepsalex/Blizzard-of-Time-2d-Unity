@@ -53,6 +53,8 @@ public class IsometricNPCMovementController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        DisableMovementIfNearTarget();
+        
         if (path == null)
             return;
 
@@ -65,8 +67,6 @@ public class IsometricNPCMovementController : MonoBehaviour
         {
             endOfPathReached = false;
         }
-
-        DisableMovementIfNearTarget();
 
         Vector2 nextPosition = (Vector2)path.vectorPath[currentWaypoint];
         Vector2 direction = Vector2.ClampMagnitude((nextPosition - rbody.position), 1).normalized;
