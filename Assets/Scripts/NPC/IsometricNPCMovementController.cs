@@ -1,13 +1,16 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
 
+[RequireComponent(typeof(Seeker))]
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(IsometricCharacterRenderer))]
+[RequireComponent(typeof(SimpleSmoothModifier))]
 public class IsometricNPCMovementController : MonoBehaviour
 {
 
     // this is temp for a* demo only
-    public Transform target;
+    public Transform moveTarget { get; set; }
 
     public float movementSpeed = 1f;
     public float nextWaypointDistance = 6f;
@@ -15,8 +18,8 @@ public class IsometricNPCMovementController : MonoBehaviour
 
     Path path;
     int currentWaypoint = 0;
-    bool reachedEndofPath = false;
-    float moveForceMultiplier = 100f;
+    bool endOfPathReached = false;
+    float moveSpeed = 1f;
 
     Seeker seeker;
     Rigidbody2D rbody;
@@ -31,31 +34,45 @@ public class IsometricNPCMovementController : MonoBehaviour
 
     void Start()
     {
-        // this is temp for a* demo only
-        InvokeRepeating("UpdatePath", 0f, .5f);
+        // temp set player as target in start
+        moveTarget = GameObject.FindGameObjectWithTag("Player").transform;
+    }
+
+    public void MoveToTarget()
+    {
+        Reset();
+        StartCoroutine(UpdatePath(stopOnPathCompletion: true));
+    }
+
+    public void FollowTarget()
+    {
+        Reset();
+        StartCoroutine(UpdatePath(stopOnPathCompletion: false));
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
         if (path == null)
             return;
-            
+
         if (currentWaypoint >= path.vectorPath.Count)
         {
-            reachedEndofPath = true;
+            endOfPathReached = true;
             return;
         }
         else
         {
-            reachedEndofPath = false;
+            endOfPathReached = false;
         }
 
-        Vector2 direction = Vector2.ClampMagnitude(((Vector2)path.vectorPath[currentWaypoint] - rbody.position), 1).normalized;
-        Vector2 force = direction * (movementSpeed * moveForceMultiplier) * Time.fixedDeltaTime;
+        DisableMovementIfNearTarget();
 
-        isoRenderer.SetDirection(force);
-        rbody.AddForce(force);
+        Vector2 nextPosition = (Vector2)path.vectorPath[currentWaypoint];
+        Vector2 direction = Vector2.ClampMagnitude((nextPosition - rbody.position), 1).normalized;
+
+        isoRenderer.SetDirection(direction);
+        transform.position = Vector2.MoveTowards(transform.position, nextPosition, moveSpeed * Time.deltaTime);
 
         float distance = Vector2.Distance(rbody.position, path.vectorPath[currentWaypoint]);
 
@@ -65,23 +82,53 @@ public class IsometricNPCMovementController : MonoBehaviour
         }
     }
 
-    void UpdatePath()
-    {
-        float distanceToEnd = Vector2.Distance(rbody.position, target.transform.position);
 
-        if (seeker.IsDone() && distanceToEnd > endDistance) {
-            seeker.StartPath(rbody.position, target.position, OnPathComplete);
-            // seeker.RunModifiers() (TODO)
+    private IEnumerator UpdatePath(bool stopOnPathCompletion)
+    {
+        while (true)
+        {
+            // If set to stop moving on path complete, end coroutine here
+            if (endOfPathReached && stopOnPathCompletion)
+                yield break;
+
+            float distanceToTarget = Vector2.Distance(rbody.position, moveTarget.transform.position);
+
+            if (seeker.IsDone() && distanceToTarget > endDistance)
+            {
+                seeker.StartPath(rbody.position, moveTarget.position, OnPathCalculationComplete);
+            }
+
+            yield return new WaitForSeconds(.5f);
         }
-            
     }
 
-    void OnPathComplete(Path p)
+    private void OnPathCalculationComplete(Path p)
     {
         if (!p.error)
         {
             path = p;
             currentWaypoint = 0;
         }
+    }
+
+    /// Disabled body kinematics near target (avoids pushing)
+    private void DisableMovementIfNearTarget()
+    {
+        float distanceToTarget = Vector2.Distance(rbody.position, moveTarget.transform.position);
+
+        if (distanceToTarget < endDistance)
+        {
+            rbody.isKinematic = true;
+            return;
+        }
+        else
+        {
+            rbody.isKinematic = false;
+        }
+    }
+    private void Reset()
+    {
+        StopAllCoroutines();
+        endOfPathReached = false;
     }
 }
